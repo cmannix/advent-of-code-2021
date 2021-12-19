@@ -1,6 +1,6 @@
 module Day2
 
-type Position = { HorizontalPosition: int; Depth: int }
+type Position = { HorizontalPosition: int; Depth: int; Aim: int }
 
 type Command =
     | Forward of Amount: int
@@ -21,7 +21,7 @@ let parseCommand (command: string) =
     | Prefix "down " amount -> amount |> int |> Down
     | other -> raise (CommandParseError($"Unsupported command {other}"))
 
-let updatePosition position command =
+let updatePositionPart1 position command =
     match command with
     | Forward amount ->
         { position with
@@ -32,3 +32,16 @@ let updatePosition position command =
     | Down amount ->
         { position with
               Depth = position.Depth + amount }
+
+let updatePositionPart2 position command =
+    match command with
+    | Forward amount ->
+        { position with
+              HorizontalPosition = position.HorizontalPosition + amount
+              Depth = position.Depth + position.Aim * amount }
+    | Up amount ->
+        { position with
+              Aim = position.Aim - amount }
+    | Down amount ->
+        { position with
+              Aim = position.Aim + amount }
