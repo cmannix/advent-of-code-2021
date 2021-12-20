@@ -1,15 +1,12 @@
 module Day3
 
-type Result = { GammaRate: int; EpsilonRate: int }
-let inline (++) a b = Seq.map2 (+) a b
+type Result =
+    { GammaRate: int
+      EpsilonRate: int
+      OxygenRate: int
+      Co2Rate: int }
 
-let getBitCountByPosition counts (number: string) =
-    number
-    |> Seq.toList
-    |> Seq.map (fun x -> if (x = '1') then 1 else -1)
-    |> fun x -> counts ++ x
-
-let toDecimalNumber bits =
+let private toDecimalNumber bits =
     let rec calculateBitValue bits currentTotal =
         match bits with
         | head :: tail when head ->
@@ -20,10 +17,65 @@ let toDecimalNumber bits =
 
     calculateBitValue bits 0
 
-let toRates bitCounts =
-    bitCounts
-    |> Seq.map (fun count -> (count > 0))
+let private getValueMatchingCriteria getBitValues input =
+    let rec findByCriteriaAtPosition bitPosition getBitValues (input: bool [] []) =
+        if Array.length input = 1 then
+            input[0]
+        else
+            let bitValues: bool [] = getBitValues input
+            let currentBitValue = bitValues[bitPosition]
+
+            let matching =
+                input
+                |> Array.filter (fun x -> x[bitPosition] = currentBitValue)
+
+            findByCriteriaAtPosition (bitPosition + 1) getBitValues matching
+
+    findByCriteriaAtPosition 0 getBitValues input
+
+let private mostCommon input =
+    let count = input |> Array.filter id |> Array.length
+    float32 count >= (float32 input.Length) / 2f
+
+let private leastCommon input =
+    let count = input |> Array.filter id |> Array.length
+    float32 count < (float32 input.Length) / 2f
+
+let private getBitsByCountCriteria criteria input =
+    Array.transpose input |> Array.map criteria
+
+let private mostCommonBits = getBitsByCountCriteria mostCommon
+
+let private leastCommonBits = getBitsByCountCriteria leastCommon
+
+let parseBitValues input =
+    input
     |> Seq.toList
-    |> fun popularBits ->
-        { GammaRate = toDecimalNumber popularBits
-          EpsilonRate = toDecimalNumber (popularBits |> List.map not) }
+    |> Seq.map
+        (fun x ->
+            match x with
+            | '0' -> false
+            | '1' -> true
+            | other -> invalidArg (nameof input) $"Unsupported character in input {other}")
+
+let calculateRates input =
+    { GammaRate =
+          input
+          |> mostCommonBits
+          |> Array.toList
+          |> toDecimalNumber
+      EpsilonRate =
+          input
+          |> leastCommonBits
+          |> Array.toList
+          |> toDecimalNumber
+      OxygenRate =
+          input
+          |> getValueMatchingCriteria mostCommonBits
+          |> Array.toList
+          |> toDecimalNumber
+      Co2Rate =
+          input
+          |> getValueMatchingCriteria leastCommonBits
+          |> Array.toList
+          |> toDecimalNumber }

@@ -38,10 +38,13 @@ let day2Part2Result =
 
 printfn $"Day 2 (Part 2): Product of final horizontal and vertical positions = %i{day2Part2Result}"
 
-let day3Part1Result =
-    File.ReadLines("Day3/input.txt")
-    |> Seq.fold Day3.getBitCountByPosition (Array.zeroCreate 12)
-    |> Day3.toRates
-    |> fun result -> result.GammaRate * result.EpsilonRate
 
-printfn $"Day 3 (Part 1): Product of Gamma rate and Epsilon rate = %i{day3Part1Result}"
+let day3Rates =
+    File.ReadLines("Day3/input.txt")
+    |> Seq.map Day3.parseBitValues
+    |> Seq.map Seq.toArray
+    |> Seq.toArray
+    |> Day3.calculateRates
+
+printfn $"Day 3 (Part 1): Product of Gamma rate and Epsilon rate = %i{day3Rates.GammaRate * day3Rates.EpsilonRate}"
+printfn $"Day 3 (Part 2): Product of Oxygen rate and CO2 rate = %i{day3Rates.OxygenRate * day3Rates.Co2Rate}"
