@@ -35,6 +35,7 @@ File.ReadLines("Day2/input.txt")
     printfn
         $"Day 2 (Part 2): Product of final horizontal and vertical positions = %i{finalPosition.Depth
                                                                                   * finalPosition.HorizontalPosition}"
+
 File.ReadLines("Day3/input.txt")
 |> Seq.map Day3.parseBitValues
 |> Seq.map Seq.toArray
@@ -62,8 +63,25 @@ File.ReadLines("Day4/input.txt")
 
 File.ReadLines("Day5/input.txt")
 |> Day5.parseLineLines
-|> Seq.map Day5.getHorizontalOrVerticalPointsOnLine
+|> Seq.filter (fun line -> Day5.isHorizontal line || Day5.isVertical line)
+|> Seq.map Day5.getLinePoints
 |> Seq.fold Day5.countLinePoints Map.empty
 |> Map.filter (fun _ count -> count >= 2)
 |> Map.count
-|> fun count -> printfn $"Day 5 (Part 1): Count of points covered by at least two horizontal or vertical lines = %i{count}"
+|> fun count ->
+    printfn $"Day 5 (Part 1): Count of points covered by at least two horizontal or vertical lines = %i{count}"
+
+File.ReadLines("Day5/input.txt")
+|> Day5.parseLineLines
+|> Seq.filter
+    (fun line ->
+        Day5.isHorizontal line
+        || Day5.isVertical line
+        || Day5.isDiagonal line)
+|> Seq.map Day5.getLinePoints
+|> Seq.fold Day5.countLinePoints Map.empty
+|> Map.filter (fun _ count -> count >= 2)
+|> Map.count
+|> fun count ->
+    printfn
+        $"Day 5 (Part 2): Count of points covered by at least two horizontal, vertical or diagonal lines = %i{count}"

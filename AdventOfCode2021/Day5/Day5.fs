@@ -1,6 +1,5 @@
 module Day5
 
-
 type Point =
     { X: int
       Y: int }
@@ -13,12 +12,20 @@ type Line =
 
 let isHorizontal line = line.Start.X = line.End.X
 let isVertical line = line.Start.Y = line.End.Y
+let isDiagonal line = abs (line.Start.X - line.End.X) = abs (line.Start.Y - line.End.Y)
 
-let getHorizontalOrVerticalPointsOnLine line =
-    if isHorizontal line then
-        [ for i in min line.Start.Y line.End.Y .. max line.Start.Y line.End.Y -> { X = line.End.X; Y = i } ]
-    else if isVertical line then
+let getLinePoints line =
+    if isVertical line then
         [ for i in min line.Start.X line.End.X .. max line.Start.X line.End.X -> { X = i; Y = line.End.Y } ]
+    else if isHorizontal line then
+        [ for i in min line.Start.Y line.End.Y .. max line.Start.Y line.End.Y -> { X = line.End.X; Y = i } ]
+    else if isDiagonal line then
+        let xs = [ min line.Start.X line.End.X .. max line.Start.X line.End.X ]
+        let ys = [ min line.Start.Y line.End.Y .. max line.Start.Y line.End.Y ]
+        List.map2
+            (fun x y -> { X = x; Y = y })
+            (if line.Start.X <= line.End.X then xs else List.rev xs)
+            (if line.Start.Y <= line.End.Y then ys else List.rev ys)
     else []
 
 let parseLineLines (input: seq<string>) =
