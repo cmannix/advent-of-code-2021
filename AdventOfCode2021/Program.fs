@@ -59,3 +59,11 @@ File.ReadLines("Day4/input.txt")
 |> fun (lastNumber, winningScore) ->
     printfn
         $"Day 4 (Part 2): Product of last winning board score and last number called = %i{lastNumber * winningScore}"
+
+File.ReadLines("Day5/input.txt")
+|> Day5.parseLineLines
+|> Seq.map Day5.getHorizontalOrVerticalPointsOnLine
+|> Seq.fold Day5.countLinePoints Map.empty
+|> Map.filter (fun _ count -> count >= 2)
+|> Map.count
+|> fun count -> printfn $"Day 5 (Part 1): Count of points covered by at least two horizontal or vertical lines = %i{count}"
